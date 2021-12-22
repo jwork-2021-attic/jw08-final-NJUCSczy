@@ -1,0 +1,80 @@
+java -cp target\classes com.example.Client.Client LAPTOP-7NR12N5J 1919
+java -cp target\classes com.example.Client.playerServer LAPTOP-7NR12N5J 1919
+
+
+package com.example.Client;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import java.io.*;
+import java.net.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+
+import javax.swing.JFrame;
+
+public class Client  {
+
+    static int pressedKey = -1;
+
+    public static void main(String[] args) throws IOException {
+
+        myKeyListener kListener=new myKeyListener();
+
+        if (args.length != 2) {
+            System.err.println("Usage: java EchoClient <host name> <port number>");
+            System.exit(1);
+        }
+
+        String hostName = args[0];
+        int portNumber = Integer.parseInt(args[1]);
+
+        SocketAddress address = new InetSocketAddress(hostName, portNumber);
+        SocketChannel client = SocketChannel.open(address);
+
+        ByteBuffer buffer1 = ByteBuffer.allocate(1024);
+        buffer1.put(("114514").getBytes("utf-8"));
+        buffer1.flip();
+        client.write(buffer1);
+
+        while (pressedKey != -2) {
+            if (pressedKey != -1) {
+                ByteBuffer buffer = ByteBuffer.allocate(1024);
+                buffer.put(("press keycode "+String.valueOf(pressedKey)).getBytes("utf-8"));
+                buffer.flip();
+                client.write(buffer);
+                pressedKey=-1;
+            }
+        }
+
+    }
+
+    public static class myKeyListener extends JFrame implements KeyListener{
+
+        public myKeyListener(){
+            addKeyListener(this);
+            System.out.println(111);
+        }
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			pressedKey=e.getKeyCode();
+			System.out.println(pressedKey);
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+    }
+
+}
